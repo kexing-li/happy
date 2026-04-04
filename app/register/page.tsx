@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
@@ -21,7 +21,7 @@ function getPasswordStrength(password: string): { level: 0 | 1 | 2 | 3; label: s
   return { level: 1, label: '弱', color: 'bg-red-400' }
 }
 
-export default function RegisterPage() {
+function RegisterContent() {
   const searchParams = useSearchParams()
   const hasLinkError = searchParams.get('error') === 'invalid_link'
 
@@ -145,5 +145,13 @@ export default function RegisterPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={null}>
+      <RegisterContent />
+    </Suspense>
   )
 }
