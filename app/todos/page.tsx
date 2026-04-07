@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { addTodo } from './actions'
@@ -26,11 +27,22 @@ export default async function TodosPage() {
       <div className="max-w-xl mx-auto px-4 py-12">
         {/* 顶部栏 */}
         <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-              我的任务
-            </h1>
-            <p className="text-sm text-zinc-400 mt-0.5">{user.email}</p>
+          <div className="flex items-center gap-3">
+            <Link 
+              href="/dashboard" 
+              className="text-2xl hover:scale-110 transition-transform"
+              title="返回应用中心"
+            >
+              ✅
+            </Link>
+            <div>
+              <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
+                <Link href="/dashboard" className="hover:text-blue-600 transition-colors">
+                  我的任务
+                </Link>
+              </h1>
+              <p className="text-sm text-zinc-400 mt-0.5">{user.email}</p>
+            </div>
           </div>
           <form action={signOut}>
             <button

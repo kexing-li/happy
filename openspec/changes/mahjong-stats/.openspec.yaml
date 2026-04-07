@@ -1,0 +1,5 @@
+name: mahjong-stats
+description: 麻将团费统计系统 - 用户上传 Excel 文件，前端展示统计数据
+status: in-progress
+schema: spec-driven
+created: 2026-04-07

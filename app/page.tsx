@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
@@ -10,6 +10,20 @@ type View = 'login' | 'forgot'
 export default function LoginPage() {
   const router = useRouter()
   const [view, setView] = useState<View>('login')
+  const [checking, setChecking] = useState(true)
+
+  // 检查是否已登录
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session) {
+        router.replace('/dashboard')
+      } else {
+        setChecking(false)
+      }
+    }
+    checkUser()
+  }, [router])
 
   // 登录状态
   const [email, setEmail] = useState('')
@@ -33,7 +47,7 @@ export default function LoginPage() {
       setLoginError('邮箱或密码不正确')
       setLoginLoading(false)
     } else {
-      router.push('/todos')
+      router.push('/dashboard')
     }
   }
 
@@ -52,6 +66,15 @@ export default function LoginPage() {
         : { text: '重置邮件已发送，请查收邮箱', isError: false }
     )
     setForgotLoading(false)
+  }
+
+  // 检查登录状态时显示加载
+  if (checking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-zinc-900">
+        <div className="text-zinc-400">加载中...</div>
+      </div>
+    )
   }
 
   return (
