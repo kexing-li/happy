@@ -24,7 +24,7 @@ export async function getCurrentUser(): Promise<UserProfile | null> {
   
   const { data: profile } = await supabase
     .from('profiles')
-    .select('id, display_name, is_admin')
+    .select('id, display_name, is_admin, app_permissions')
     .eq('id', user.id)
     .single();
   

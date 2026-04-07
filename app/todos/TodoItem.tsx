@@ -12,6 +12,8 @@ interface Todo {
 export default function TodoItem({ todo }: { todo: Todo }) {
   const [editing, setEditing] = useState(false)
   const [editText, setEditText] = useState(todo.task)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -33,6 +35,13 @@ export default function TodoItem({ todo }: { todo: Todo }) {
     setEditing(false)
   }
 
+  const handleDelete = async () => {
+    setIsDeleting(true)
+    await deleteTodo(todo.id)
+    setIsDeleting(false)
+    setShowDeleteConfirm(false)
+  }
+
   return (
     <li className="flex items-center gap-3 py-3 border-b border-zinc-100 dark:border-zinc-700 last:border-0 group">
       {/* 完成状态勾选框 */}
@@ -41,10 +50,31 @@ export default function TodoItem({ todo }: { todo: Todo }) {
         checked={todo.is_complete}
         onChange={(e) => toggleTodo(todo.id, e.target.checked)}
         className="h-4 w-4 rounded border-zinc-300 text-zinc-900 cursor-pointer flex-shrink-0"
+        disabled={showDeleteConfirm}
       />
 
-      {/* 任务内容 / 编辑模式 */}
-      {editing ? (
+      {/* 任务内容 / 编辑模式 / 删除确认 */}
+      {showDeleteConfirm ? (
+        <div className="flex flex-1 items-center gap-2">
+          <span className="flex-1 text-sm text-red-600 dark:text-red-400">
+            确定删除「{todo.task}」？
+          </span>
+          <button
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="text-xs px-2 py-1 rounded bg-red-500 text-white hover:bg-red-600 transition-colors disabled:opacity-50"
+          >
+            {isDeleting ? '删除中...' : '确定'}
+          </button>
+          <button
+            onClick={() => setShowDeleteConfirm(false)}
+            disabled={isDeleting}
+            className="text-xs px-2 py-1 rounded border border-zinc-200 dark:border-zinc-600 text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors disabled:opacity-50"
+          >
+            取消
+          </button>
+        </div>
+      ) : editing ? (
         <div className="flex flex-1 items-center gap-2">
           <input
             ref={inputRef}
@@ -86,7 +116,7 @@ export default function TodoItem({ todo }: { todo: Todo }) {
               编辑
             </button>
             <button
-              onClick={() => deleteTodo(todo.id)}
+              onClick={() => setShowDeleteConfirm(true)}
               className="text-xs px-2 py-1 rounded text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
             >
               删除

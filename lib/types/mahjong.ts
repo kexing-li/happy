@@ -123,6 +123,7 @@ export interface UserProfile {
   id: string;
   display_name: string | null;
   is_admin: boolean;
+  app_permissions: string[];
 }
 
 // 上传日志

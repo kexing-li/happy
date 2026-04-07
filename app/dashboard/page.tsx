@@ -2,7 +2,14 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 
-export default async function DashboardPage() {
+interface PageProps {
+  searchParams: Promise<{ error?: string }>;
+}
+
+export default async function DashboardPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const errorMessage = params.error === 'no_permission' ? '您没有访问该应用的权限' : null;
+  
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   
@@ -73,6 +80,14 @@ export default async function DashboardPage() {
 
       {/* 主内容 */}
       <main className="max-w-5xl mx-auto px-4 py-12">
+        {/* 权限错误提示 */}
+        {errorMessage && (
+          <div className="max-w-3xl mx-auto mb-8 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
+            <span className="text-red-500">⚠️</span>
+            <p className="text-red-700">{errorMessage}</p>
+          </div>
+        )}
+
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-3">选择应用</h2>
           <p className="text-gray-500">点击进入你想使用的功能</p>
@@ -124,6 +139,12 @@ export default async function DashboardPage() {
           <div className="mt-12 text-center">
             <p className="text-sm text-gray-400 mb-4">管理员快捷操作</p>
             <div className="flex justify-center gap-4">
+              <Link
+                href="/admin/users"
+                className="px-4 py-2 bg-amber-100 text-amber-700 rounded-lg text-sm font-medium hover:bg-amber-200 transition-colors"
+              >
+                👥 用户管理
+              </Link>
               <Link
                 href="/mahjong/upload"
                 className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-lg text-sm font-medium hover:bg-emerald-200 transition-colors"
